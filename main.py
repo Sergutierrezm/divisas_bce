@@ -3,7 +3,7 @@ from procesador import procesar_datos
 from loader import cargar_a_postgres
 
 def ejecutar_pipeline():
-    print("🚀 Iniciando Pipeline ETL Automático de Productos...\n")
+    print("🚀 Iniciando Pipeline ETL de Divisas BCE...\n")
     
     # --- FASE 1: EXTRACCIÓN ---
     print(">>> FASE 1: Extracción")
@@ -27,7 +27,7 @@ def ejecutar_pipeline():
     
     # --- FASE 3: CARGA ---
     print(">>> FASE 3: Carga")
-    # Le pasamos el DF limpio y el nombre de la nueva tabla en tu BD 'tienda'
+    # Guardamos el DataFrame limpio en la BD 'divisas_bce'
     exito = cargar_a_postgres(df_clean, "tipos_cambio_bce")
     
     if exito:
