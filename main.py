@@ -1,8 +1,9 @@
 from extractor_api import extraer_datos
 from procesador import procesar_datos
-from loader import cargar_a_postgres
+from loader import cargar_a_postgres, existen_datos_fecha
 
 def ejecutar_pipeline():
+    nombre_tabla = "tipos_cambio_bce"
     print("🚀 Iniciando Pipeline ETL de Divisas BCE...\n")
     
     # --- FASE 1: EXTRACCIÓN ---
@@ -11,6 +12,12 @@ def ejecutar_pipeline():
     
     if df_raw is None:
         print("❌ Pipeline abortado.")
+        return
+
+    # Comprobamos si ya tenemos en BD la fecha que acaba de devolver el BCE
+    fecha_datos = df_raw["fecha_actualizacion"].iloc[0]
+    if existen_datos_fecha(fecha_datos, nombre_tabla):
+        print(f"\nℹ️ Los datos del {fecha_datos} ya están guardados en '{nombre_tabla}'. No es necesario volver a cargarlos.")
         return
         
     print("-" * 50)
@@ -27,11 +34,10 @@ def ejecutar_pipeline():
     
     # --- FASE 3: CARGA ---
     print(">>> FASE 3: Carga")
-    # Guardamos el DataFrame limpio en la BD 'divisas_bce'
-    exito = cargar_a_postgres(df_clean, "tipos_cambio_bce")
+    exito = cargar_a_postgres(df_clean, nombre_tabla)
     
     if exito:
-        print("\n✅ Pipeline ETL completado. Datos listos en PostgreSQL.")
+        print("\n✅ Pipeline ETL completado. Histórico actualizado en PostgreSQL.")
     else:
         print("\n❌ Pipeline abortado.")
 
